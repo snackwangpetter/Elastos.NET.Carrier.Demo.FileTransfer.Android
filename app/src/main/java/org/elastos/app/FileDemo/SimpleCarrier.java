@@ -25,7 +25,7 @@ import java.util.Locale;
 class SimpleCarrier {
 	private static final String TAG = "SimpleCarrier";
 	private static SimpleCarrier sSimpleCarrier;
-	private static Carrier sCarrier;
+	private Carrier carrier;
 	private static Manager sFileTransferManager;
 	private static FileTransfer sFileTransfer;
 	private TransferHandler mTransferHandler;
@@ -57,7 +57,7 @@ class SimpleCarrier {
 
 	void AddFriend(String address) {
 		try {
-			sCarrier.addFriend(address, "hello");
+			carrier.addFriend(address, "hello");
 		}
 		catch (CarrierException e) {
 			e.printStackTrace();
@@ -92,7 +92,7 @@ class SimpleCarrier {
 
 	String MyAddress() {
 		try {
-			return sCarrier.getAddress();
+			return carrier.getAddress();
 		}
 		catch (CarrierException e) {
 			e.printStackTrace();
@@ -108,14 +108,16 @@ class SimpleCarrier {
 		CarrierHandler carrierHandler = new CarrierHandler();
 
 		try {
-			Carrier.initializeInstance(options, carrierHandler);
-			sCarrier = Carrier.getInstance();
-			sCarrier.start(0);
+//			Carrier.initializeInstance(options, carrierHandler);
+//			sCarrier = Carrier.getInstance();
+			carrier = new Carrier(carrierHandler);
+			carrier.initial(options);
+			carrier.start(0);
 			Log.i(TAG, "Carrier node is ready now");
 
 			//Initialize fileTransfer instance.
 			FileTransferManagerHandler fileTransferManagerHandler = new FileTransferManagerHandler();
-			Manager.initializeInstance(sCarrier, fileTransferManagerHandler);
+			Manager.initializeInstance(carrier, fileTransferManagerHandler);
 			sFileTransferManager = Manager.getInstance();
 		}
 		catch (CarrierException /*| InterruptedException*/ e) {
